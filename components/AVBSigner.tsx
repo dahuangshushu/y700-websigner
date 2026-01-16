@@ -37,35 +37,14 @@ export default function AVBSigner() {
         const { loadPyodide } = await import('pyodide');
         
         // 动态加载 Pyodide
-        // 尝试多个 CDN 源以提高可靠性
-        let pyodideInstance;
-        const cdnUrls = [
-          'https://cdn.jsdelivr.net/pyodide/v0.24.1/full/',
-          'https://cdn.jsdelivr.net/pyodide/v0.24.1/',
-          'https://unpkg.com/pyodide@0.24.1/',
-        ];
+        // 使用官方推荐的 CDN 路径（必须使用 /full/ 路径）
+        addLog('info', '正在从 CDN 加载 Pyodide WASM 文件（首次加载需要一些时间）...');
         
-        let lastError;
-        for (const indexURL of cdnUrls) {
-          try {
-            addLog('info', `尝试从 ${indexURL} 加载 Pyodide...`);
-            pyodideInstance = await loadPyodide({
-              indexURL: indexURL.endsWith('/') ? indexURL : `${indexURL}/`,
-              fullStdLib: false,
-            });
-            addLog('success', `Pyodide 从 ${indexURL} 加载成功`);
-            break;
-          } catch (error) {
-            lastError = error;
-            const errorMsg = error instanceof Error ? error.message : String(error);
-            addLog('warning', `从 ${indexURL} 加载失败: ${errorMsg}`);
-          }
-        }
+        const pyodideInstance = await loadPyodide({
+          indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.24.1/full/',
+        });
         
-        if (!pyodideInstance) {
-          const errorMsg = lastError instanceof Error ? lastError.message : '未知错误';
-          throw new Error(`所有 CDN 源都加载失败。最后错误: ${errorMsg}`);
-        }
+        addLog('success', 'Pyodide 核心加载成功');
 
         setLoadingProgress(40);
         addLog('info', '正在加载 Python 依赖包...');
