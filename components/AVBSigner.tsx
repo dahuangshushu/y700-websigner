@@ -37,9 +37,35 @@ export default function AVBSigner() {
         const { loadPyodide } = await import('pyodide');
         
         // 动态加载 Pyodide
-        const pyodideInstance = await loadPyodide({
-          indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.24.1/full/',
-        });
+        // 尝试多个 CDN 源以提高可靠性
+        let pyodideInstance;
+        const cdnUrls = [
+          'https://cdn.jsdelivr.net/pyodide/v0.24.1/full/',
+          'https://cdn.jsdelivr.net/pyodide/v0.24.1/',
+          'https://unpkg.com/pyodide@0.24.1/',
+        ];
+        
+        let lastError;
+        for (const indexURL of cdnUrls) {
+          try {
+            addLog('info', `尝试从 ${indexURL} 加载 Pyodide...`);
+            pyodideInstance = await loadPyodide({
+              indexURL: indexURL.endsWith('/') ? indexURL : `${indexURL}/`,
+              fullStdLib: false,
+            });
+            addLog('success', `Pyodide 从 ${indexURL} 加载成功`);
+            break;
+          } catch (error) {
+            lastError = error;
+            const errorMsg = error instanceof Error ? error.message : String(error);
+            addLog('warning', `从 ${indexURL} 加载失败: ${errorMsg}`);
+          }
+        }
+        
+        if (!pyodideInstance) {
+          const errorMsg = lastError instanceof Error ? lastError.message : '未知错误';
+          throw new Error(`所有 CDN 源都加载失败。最后错误: ${errorMsg}`);
+        }
 
         setLoadingProgress(40);
         addLog('info', '正在加载 Python 依赖包...');
