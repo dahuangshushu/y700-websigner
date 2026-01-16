@@ -36,6 +36,16 @@ npm install
 npm install --registry=https://registry.npmmirror.com
 ```
 
+**生成 package-lock.json（可选但推荐）：**
+
+如果需要使用 `npm ci` 来确保依赖版本一致性，请运行：
+
+```bash
+npm install --package-lock-only
+```
+
+这会在不安装 node_modules 的情况下生成 `package-lock.json` 文件。
+
 ### 运行开发服务器
 
 ```bash
@@ -69,6 +79,8 @@ npm run build
 2. 推送代码到 GitHub
 3. GitHub Actions 会自动构建并部署到 `gh-pages` 分支
 
+**注意：** GitHub Actions 工作流使用 `npm install` 安装依赖。如果需要使用 `npm ci` 来确保依赖版本一致性，请先在本地生成 `package-lock.json` 文件并提交到仓库。
+
 ### 手动部署
 
 1. 构建静态文件：
@@ -91,6 +103,8 @@ basePath: isProduction ? '/your-repo-name' : '',
 ```
 
 **当前配置：** `/y700-websigner`
+
+详细部署指南请查看 [DEPLOY.md](./DEPLOY.md)
 
 ## 使用说明
 
@@ -123,6 +137,8 @@ basePath: isProduction ? '/your-repo-name' : '',
 │   │   └── avbtool.py   # AVB 工具脚本
 │   ├── coi-serviceworker.js  # COOP/COEP 补丁脚本
 │   └── coi-sw.js        # Service Worker
+├── .github/workflows/    # GitHub Actions
+│   └── deploy.yml       # 自动部署配置
 ├── next.config.js        # Next.js 配置
 ├── tailwind.config.js    # Tailwind 配置
 └── package.json          # 项目依赖
