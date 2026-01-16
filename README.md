@@ -82,11 +82,15 @@ npm run build
 
 ### 配置仓库名称
 
-如果仓库名称不是 `websigner`，需要修改 `next.config.js` 中的 `basePath`：
+项目已配置为使用仓库名 `y700-websigner`。
+
+如果仓库名称不同，需要修改 `next.config.js` 中的 `basePath`：
 
 ```javascript
-basePath: process.env.NODE_ENV === 'production' ? '/your-repo-name' : '',
+basePath: isProduction ? '/your-repo-name' : '',
 ```
+
+**当前配置：** `/y700-websigner`
 
 ## 使用说明
 

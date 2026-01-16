@@ -4,8 +4,8 @@ const isProduction = process.env.NODE_ENV === 'production';
 const nextConfig = {
   // 只在生产构建时使用静态导出
   ...(isProduction && { output: 'export' }),
-  basePath: isProduction ? '/websigner' : '',
-  assetPrefix: isProduction ? '/websigner' : '',
+  basePath: isProduction ? '/y700-websigner' : '',
+  assetPrefix: isProduction ? '/y700-websigner' : '',
   images: {
     unoptimized: true,
   },
