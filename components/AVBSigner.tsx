@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { loadPyodide } from 'pyodide';
-import type { PyodideInterface } from 'pyodide';
+
+// 动态导入类型，避免在构建时加载
+type PyodideInterface = Awaited<ReturnType<typeof import('pyodide')['loadPyodide']>>;
 
 interface LogEntry {
   timestamp: string;
@@ -23,10 +24,18 @@ export default function AVBSigner() {
   // 初始化 Pyodide
   useEffect(() => {
     const initPyodide = async () => {
+      // 确保只在客户端运行
+      if (typeof window === 'undefined') {
+        return;
+      }
+
       try {
         addLog('info', '正在初始化 Pyodide 环境...');
         setLoadingProgress(10);
 
+        // 动态导入 Pyodide（仅在客户端）
+        const { loadPyodide } = await import('pyodide');
+        
         // 动态加载 Pyodide
         const pyodideInstance = await loadPyodide({
           indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.24.1/full/',
